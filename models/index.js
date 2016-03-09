@@ -2,6 +2,7 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLNonNull,
+  GraphQLList,
   GraphQLInt
 } from 'graphql';
 
@@ -11,12 +12,12 @@ import { resolver } from 'graphql-sequelize';
 import { sequelizeNodeInterface } from 'graphql-sequelize/lib/relay';
 
 const {
-  nodeField,
+  // nodeField,
   nodeTypeMapper
 } = sequelizeNodeInterface(sequelize);
 
 
-import { User, UserType } from './schemas';
+import { User, UserType, UserCreate, UserUpdate } from './schemas';
 
 nodeTypeMapper.mapTypes({
   [User.name]: UserType
@@ -34,7 +35,18 @@ const RootSchema = new GraphQLSchema({
           }
         },
         resolve: resolver(User, { include: false })
+      },
+      users: {
+        type: new GraphQLList(UserType),
+        resolve: resolver(User, { include: false })
       }
+    }
+  }),
+  mutation: new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+      createUser: UserCreate,
+      updateUser: UserUpdate
     }
   })
 });
